@@ -1,0 +1,20 @@
+# Import
+from glm import normalize, vec2
+import pyray as ray
+
+# Window resolution
+WINDOW_RESOLUTION = WINDOW_WIDTH, WINDOW_HEIGHT = 640, 360
+
+# Map display
+MAP_OFFSET = 20
+DISPLAY_X_MIN, DISPLAY_X_MAX = MAP_OFFSET, WINDOW_WIDTH - MAP_OFFSET
+DISPLAY_Y_MIN, DISPLAY_Y_MAX = MAP_OFFSET, WINDOW_HEIGHT - MAP_OFFSET
+
+# Colors
+BG_COLOR = ray.BLACK
+VERTEX_COLOR = ray.WHITE
+SEGMENT_COLOR = ray.YELLOW
+NORMAL_COLOR = ray.ORANGE
+
+# Infinite
+INF = float('inf')

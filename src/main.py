@@ -1,16 +1,17 @@
 # Import
 from core.engine import Engine
-from settings import *
+from common import *
 
 # Application class
 class App:
 	# Constructor
 	def __init__(self):
+		# Define properties
 		self.engine = Engine(app = self)
 		self.delta = 0.0
 
 		# Initialize window
-		ray.init_window(WIDTH, HEIGHT, 'Plume Engine')
+		ray.init_window(WINDOW_WIDTH, WINDOW_HEIGHT, 'Plume Engine')
 
 	# Run function
 	def run(self):
@@ -25,5 +26,6 @@ class App:
 
 # Main function
 if __name__ == '__main__':
+	# Create and run application
 	app = App()
 	app.run()
