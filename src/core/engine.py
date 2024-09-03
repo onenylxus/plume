@@ -1,6 +1,7 @@
 # Import
 from common import *
 from core.renderer import Renderer
+from map.bsp import BSPBuilder, BSPTraverser
 from map.level import Level
 from resources.levels.test import segments as test_segments
 
@@ -8,13 +9,16 @@ from resources.levels.test import segments as test_segments
 class Engine:
 	# Constructor
 	def __init__(self, app):
+		# Define properties
 		self.app = app
 		self.level = Level(self, test_segments)
+		self.bsp_builder = BSPBuilder(self)
+		self.bsp_traverser = BSPTraverser(self)
 		self.renderer = Renderer(self)
 
 	# Update function
 	def update(self):
-		self.renderer.update()
+		self.bsp_traverser.update()
 
 	# Draw function
 	def draw(self):

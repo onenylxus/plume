@@ -5,6 +5,7 @@ from common import *
 class Segment:
 	# Constructor
   def __init__(self, start, end):
+    # Define properties
     self.start = vec2(start)
     self.end = vec2(end)
 
