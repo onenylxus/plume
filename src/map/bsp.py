@@ -23,17 +23,62 @@ class BSPBuilder:
 		self.segments = []
 		self.root = BSPNode()
 		self.id = 0
+		self.front_count, self.back_count, self.split_count = 0, 0, 0
 
 		# Initialize
 		self.fetch()
+
+	# Reset function
+	def reset(self):
+		self.segments = []
+		self.root = BSPNode()
+		self.id = 0
+		self.front_count, self.back_count, self.split_count = 0, 0, 0
 
 	# Fetch data from engine
 	def fetch(self):
 		# Get source segments
 		if self.engine.level is not None:
 			self.source = self.engine.level.segments
-			self.root = BSPNode()
+
+			# Build tree with best seed
+			seed = self.find_best_seed()
+			random.seed(seed)
+			random.shuffle(self.source)
+			self.reset()
 			self.build_tree(self.root, self.source)
+
+			# Print partitioning statistics
+			print(f"[BSPBuilder] Front segments: {self.front_count}")
+			print(f"[BSPBuilder] Back segments: {self.back_count}")
+			print(f"[BSPBuilder] Splits: {self.split_count}")
+
+	# Find best seed
+	def find_best_seed(self, start_seed = 0, end_seed = 10000, weight = 3):
+		# Define variables
+		best_seed, best_score = -1, INF
+
+		# Iterate through seeds
+		for seed in range(start_seed, end_seed):
+			source = self.source.copy()
+			root = BSPNode()
+
+			# Build tree virtually
+			random.seed(seed)
+			random.shuffle(source)
+			self.reset()
+			self.build_tree(root, source)
+
+			# Calculate score
+			score = abs(self.back_count - self.front_count) + weight * self.split_count
+			if score < best_score:
+				best_seed, best_score = seed, score
+
+		# Print result
+		print(f"[BSPBuilder] Best seed is #{best_seed} with score {best_score}")
+
+		# Return
+		return best_seed
 
 	# Add segment
 	def add_segment(self, node, segment):
@@ -67,6 +112,7 @@ class BSPBuilder:
 			if not is_denominator_zero:
 				t = numerator / denominator
 				if 0 < t < 1:
+					self.split_count += 1
 					intersection = segment.start + t * segment.get_vector()
 					front_segment = copy(segment)
 					front_segment.end = intersection
@@ -100,9 +146,11 @@ class BSPBuilder:
 
 		# Recurse
 		if back_segments:
+			self.back_count += 1
 			node.back = BSPNode()
 			self.build_tree(node.back, back_segments)
 		if front_segments:
+			self.front_count += 1
 			node.front = BSPNode()
 			self.build_tree(node.front, front_segments)
 

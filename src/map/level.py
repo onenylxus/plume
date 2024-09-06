@@ -8,4 +8,4 @@ class Level:
   def __init__(self, engine, segments):
     # Define properties
     self.engine = engine
-    self.segments: list[Segment] = [Segment(start, end) for (start, end) in segments]
+    self.segments = [Segment(start, end) for (start, end) in segments]

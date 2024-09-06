@@ -1,6 +1,7 @@
 # Import
 from glm import normalize, vec2
 import pyray as ray
+import random
 
 # Window resolution
 WINDOW_RESOLUTION = WINDOW_WIDTH, WINDOW_HEIGHT = 640, 360
