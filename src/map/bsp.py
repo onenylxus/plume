@@ -1,6 +1,7 @@
 # Import
 from common import *
 from copy import copy
+import multiprocessing as mp
 from utils import cross_2d, is_front
 
 # BSP node class
@@ -42,7 +43,9 @@ class BSPBuilder:
 			self.source = self.engine.level.segments
 
 			# Build tree with best seed
-			seed = self.find_best_seed()
+			seed = self.engine.level.settings['seed']
+			if seed < 0:
+				seed = self.find_best_seed_mp()
 			random.seed(seed)
 			random.shuffle(self.source)
 			self.reset()
@@ -54,7 +57,7 @@ class BSPBuilder:
 			print(f"[BSPBuilder] Splits: {self.split_count}")
 
 	# Find best seed
-	def find_best_seed(self, start_seed = 0, end_seed = 10000, weight = 3):
+	def find_best_seed(self, start_seed = 0, end_seed = 10000, weight = 3, index = 0, results = {}):
 		# Define variables
 		best_seed, best_score = -1, INF
 
@@ -76,6 +79,32 @@ class BSPBuilder:
 
 		# Print result
 		print(f"[BSPBuilder] Best seed is #{best_seed} with score {best_score}")
+
+		# Return
+		results[index] = (best_seed, best_score)
+		return best_seed
+
+	# Find best seed with multiprocessing
+	def find_best_seed_mp(self, start_seed = 0, end_seed = 10000):
+		# Define variables
+		cpu_count = mp.cpu_count()
+		diff = ceil((end_seed - start_seed) / cpu_count)
+		results = mp.Manager().dict()
+
+		# Create processes
+		processes = []
+		for i in range(cpu_count):
+			process = mp.Process(target = self.find_best_seed, args = (i * diff, (i + 1) * diff, 3, i, results))
+			processes.append(process)
+			process.start()
+
+		# Join processes and obtain best seed
+		for process in processes:
+			process.join()
+		best_seed = min(results.values(), key = lambda t: t[1])[0]
+
+		# Print result
+		print(f"[BSPBuilder] Best seed is #{best_seed}")
 
 		# Return
 		return best_seed

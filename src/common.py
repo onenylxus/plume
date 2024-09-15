@@ -1,5 +1,6 @@
 # Import
 from glm import normalize, vec2
+from math import ceil
 import pyray as ray
 import random
 
